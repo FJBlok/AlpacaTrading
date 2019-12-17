@@ -2,8 +2,8 @@
 .DS_Store
 .env
 .gitignore
-.idea/*
-examples/
-lib/
-node_modules/*
-test/
+.idea
+examples
+lib
+node_modules
+test
