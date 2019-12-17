@@ -1,14 +1,10 @@
 {
   "name": "@alpacahq/alpaca-trading",
   "version": "1.2.6",
-  "description": "Javascript for the Alpaca Trade API",
+  "description": "Javascript library for the Alpaca Trade API",
   "main": "lib/alpaca-trade-api.js",
   "scripts": {
     "test": "mocha --timeout 4s test/init.js 'test/**/*.test.js'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/alpacahq/alpaca-trading.git"
   },
   "keywords": [
     "Alpaca",
@@ -21,16 +17,13 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/alpacahq/alpaca-trading/issues"
+    "url": "https://github.com/alpacahq/alpaca-trade-api-js/issues"
   },
   "homepage": "https://alpaca.markets/",
   "dependencies": {
-    "@alpacahq/alpaDca-trade-api": "latest",
-    "@alpacahq/alpaca-trade-api": "^1.2.7",
     "dotenv": "^6.0.0",
     "lodash": "^4.17.11",
     "nats": "^1.0.1",
-    "node": "^13.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "urljoin": "^0.1.5",
