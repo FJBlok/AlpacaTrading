@@ -4,3 +4,11 @@ node_modules/
 .npm
 .env
 temp.js
+api.txt
+.DS_Store
+.idea/.gitignore
+.idea/AlpacaTrading.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/php.xml
+.idea/vcs.xml

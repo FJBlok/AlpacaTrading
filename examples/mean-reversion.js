@@ -1,13 +1,13 @@
-const API_KEY = 'YOUR_API_KEY_HERE';
-const API_SECRET = 'YOUR_API_SECRET_HERE';
+const API_KEY = 'PK8RZXECKTREK5EKU477';
+const API_SECRET = 'v1mv0aNkg8HJLcoKMBjxAiFb3cNG5Xjmd/RStWC5';
 const PAPER = true;
 
 class MeanReversion {
   constructor(API_KEY, API_SECRET, PAPER){
     this.Alpaca = require('@alpacahq/alpaca-trade-api');
     this.alpaca = new this.Alpaca({
-      keyId: API_KEY, 
-      secretKey: API_SECRET, 
+      keyId: API_KEY,
+      secretKey: API_SECRET,
       paper: PAPER
     });
     this.runningAverage = 0;
@@ -21,7 +21,7 @@ class MeanReversion {
     // First, cancel any existing orders so they don't impact our buying power.
     var orders;
     await this.alpaca.getOrders({
-      status:'all', 
+      status:'all',
       direction:'asc'
     }).then((resp) => {
       orders = resp;
@@ -144,7 +144,7 @@ class MeanReversion {
       this.runningAverage += bar.c;
     })
     this.runningAverage /= 20;
-  
+
     if(currPrice > this.runningAverage){
       // Sell our position if the price is above the running average, if any.
       if(positionQuantity > 0){
@@ -167,7 +167,7 @@ class MeanReversion {
 
       // Add to our position, constrained by our buying power; or, sell down to optimal amount of shares.
       if(amountToAdd > 0){
-        if(amountToAdd > buyingPower) amountToAdd = buyingPower; 
+        if(amountToAdd > buyingPower) amountToAdd = buyingPower;
         var qtyToBuy = Math.floor(amountToAdd / currPrice);
         await this.submitLimitOrder(qtyToBuy, this.stock, currPrice, 'buy');
       }
@@ -184,11 +184,11 @@ class MeanReversion {
   async submitLimitOrder(quantity, stock, price, side){
     if(quantity > 0){
       await this.alpaca.createOrder({
-        symbol: stock, 
-        qty: quantity, 
-        side: side, 
-        type: 'limit', 
-        time_in_force: 'day', 
+        symbol: stock,
+        qty: quantity,
+        side: side,
+        type: 'limit',
+        time_in_force: 'day',
         limit_price: price
       }).then((resp) => {
         this.lastOrder = resp;
@@ -206,10 +206,10 @@ class MeanReversion {
   async submitMarketOrder(quantity, stock, side){
     if(quantity > 0){
       await this.alpaca.createOrder({
-        symbol: stock, 
-        qty: quantity, 
-        side: side, 
-        type: 'market', 
+        symbol: stock,
+        qty: quantity,
+        side: side,
+        type: 'market',
         time_in_force: 'day'
       }).then((resp) => {
         this.lastOrder = resp;
