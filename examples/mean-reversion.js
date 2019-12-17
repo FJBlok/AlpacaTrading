@@ -1,6 +1,6 @@
-const API_KEY = 'PK8RZXECKTREK5EKU477';
-const API_SECRET = 'v1mv0aNkg8HJLcoKMBjxAiFb3cNG5Xjmd/RStWC5';
-const PAPER = true;
+const API_KEY = process.env.APCA_API_KEY_ID;
+const API_SECRET = process.env.APCA_API_SECRET_KEY;
+const PAPER = process.env.APCA_API_PAPER;
 
 class MeanReversion {
   constructor(API_KEY, API_SECRET, PAPER){

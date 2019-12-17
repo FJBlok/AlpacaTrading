@@ -1,9 +1,9 @@
 class LongShort {
-  constructor(API_KEY,API_SECRET){
+  constructor(){
     this.alpaca = new AlpacaCORS({
-      keyId: API_KEY,
-      secretKey: API_SECRET,
-      baseUrl: 'https://paper-api.alpaca.markets'
+      keyId: process.env.APCA_API_KEY_ID,
+      secretKey: process.env.APCA_API_SECRET_KEY,
+      baseUrl: process.env.APCA_API_BASE_URL,
     });
 
     this.allStocks = ['DOMO', 'TLRY', 'SQ', 'MRO', 'AAPL', 'GM', 'SNAP', 'SHOP', 'SPLK', 'BA', 'AMZN', 'SUI', 'SUN', 'TSLA', 'CGC', 'SPWR', 'NIO', 'CAT', 'MSFT', 'PANW', 'OKTA', 'TWTR', 'TM', 'RTN', 'ATVI', 'GS', 'BAC', 'MS', 'TWLO', 'QCOM'];
@@ -30,7 +30,7 @@ class LongShort {
     this.chart_data = [];
     this.positions = [];
   }
-  
+
   async run(){
     // First, cancel any existing orders so they don't impact our buying power.
     var orders;
@@ -68,7 +68,7 @@ class LongShort {
       if(this.timeToClose < (60000 * 15)) {
         // Close all positions when 15 minutes til market close.
         writeToEventLog("Market closing soon.  Closing positions.");
-        
+
         await this.alpaca.getPositions().then(async (resp) => {
           var promClose = [];
           resp.forEach((position) => {
@@ -81,7 +81,7 @@ class LongShort {
               resolve();
             }));
           });
-          
+
           await Promise.all(promClose);
         }).catch((err) => {writeToEventLog(err);});
         clearInterval(this.spin);
@@ -114,7 +114,7 @@ class LongShort {
               if(isOpen) {
                 clearInterval(this.marketChecker);
                 resolve();
-              } 
+              }
               else {
                 var openTime = new Date(resp.next_open.substring(0, resp.next_close.length - 6));
                 var currTime = new Date(resp.timestamp.substring(0, resp.timestamp.length - 6));
@@ -136,7 +136,7 @@ class LongShort {
     // Clear existing orders again.
     var orders;
     await this.alpaca.getOrders({
-      status: 'open', 
+      status: 'open',
       direction: 'desc'
     }).then((resp) => {
       orders = resp;
@@ -244,7 +244,7 @@ class LongShort {
     var promBatches = [];
     this.adjustedQLong = -1;
     this.adjustedQShort = -1;
-    
+
     await Promise.all([promLong, promShort]).then(async (resp) => {
       // Handle rejected/incomplete orders.
       resp.forEach(async (arrays, i) => {
@@ -260,7 +260,7 @@ class LongShort {
           // Return orders that didn't complete, and determine new quantities to purchase.
           if(arrays[0].length > 0 && arrays[1].length > 0){
             var promPrices = this.getTotalPrice(arrays[1]);
-            
+
             await Promise.all(promPrices).then((resp) => {
               var completeTotal = resp.reduce((a, b) => a + b, 0);
               if(completeTotal != 0){
@@ -288,10 +288,10 @@ class LongShort {
               var promLong = this.submitOrder(this.qLong, stock, 'buy');
               await promLong;
               resolve();
-            })); 
+            }));
           });
         }
-        
+
         var promShort = [];
         if(this.adjustedQShort >= 0){
           this.qShort = this.adjustedQShort - this.qShort;
@@ -345,7 +345,7 @@ class LongShort {
     await Promise.all(promShort).then((resp) => {
       shortTotal = resp.reduce((a, b) => a + b, 0);
     });
-    
+
     this.qLong = Math.floor(this.longAmount / longTotal);
     this.qShort = Math.floor(this.shortAmount / shortTotal);
   }
@@ -439,14 +439,14 @@ class LongShort {
     // Sort the stocks in place by the percent change field (marked by pc).
     this.allStocks.sort((a, b) => {return a.pc - b.pc;});
   }
-  
+
   kill() {
     clearInterval(this.marketChecker);
     clearInterval(this.spin);
     throw new error("Killed script");
   }
-  
-  
+
+
   async init() {
     var prom = this.getTodayOpenClose();
     await prom.then((resp) => {
@@ -469,7 +469,7 @@ class LongShort {
               },
             }],
             yAxes: [{
-              
+
             }],
           },
           title: {
@@ -504,13 +504,13 @@ class LongShort {
           var openTime = resp[0].open;
           var closeTime = resp[0].close;
           var calDate = resp[0].date;
-  
+
           openTime = openTime.split(":");
           closeTime = closeTime.split(":");
           calDate = calDate.split("-");
-  
+
           var offset = new Date(new Date().toLocaleString('en-US',{timeZone: 'America/New_York'})).getHours() - new Date().getHours();
-  
+
           openTime = new Date(calDate[0],calDate[1]-1,calDate[2],openTime[0]-offset,openTime[1]);
           closeTime = new Date(calDate[0],calDate[1]-1,calDate[2],closeTime[0]-offset,closeTime[1]);
           resolve([openTime,closeTime]);
@@ -555,9 +555,7 @@ class LongShort {
 }
 
 function runScript(){
-  var API_KEY = $("#api-key").val();
-  var API_SECRET = $("#api-secret").val();
-  var ls = new LongShort(API_KEY,API_SECRET);
+  var ls = new LongShort();
   ls.init();
   ls.run();
 }
